@@ -7,10 +7,20 @@
 //
 
 #import "GBDocumentSectionData.h"
-
+#import "GBComment.h"
 
 @implementation GBDocumentSectionData
 
-@synthesize sectionName, title, subsections;
+@synthesize nameOfDocumentSection, humanReadableNameOfDocumentSection, subsections;
+
+- (void)logContents
+{
+	NSLog(@"Section %@ contents: %@", self.nameOfDocumentSection, self.comment.stringValue);
+	for (GBDocumentSectionData *d in self.subsections)
+	{
+		[d logContents];
+	}
+}
+
 
 @end

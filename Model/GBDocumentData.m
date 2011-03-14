@@ -9,6 +9,7 @@
 #import "GBApplicationSettingsProvider.h"
 #import "GBDataObjects.h"
 #import "GBDocumentData.h"
+#import "GBDocumentSectionData.h"
 
 @implementation GBDocumentData
 
@@ -38,6 +39,30 @@
 		self.comment.sourceInfo = info;
 		_adoptedProtocols = [[GBAdoptedProtocolsProvider alloc] initWithParentObject:self];
 		_methods = [[GBMethodsProvider alloc] initWithParentObject:self];
+		
+		self.sections = [NSMutableArray array];
+	}
+	return self;
+}
+
+
+// For initing with new document parser, which needs to create object before knowing contents.
+// ... or should I just allow contents to be nil in the other initialiser?
+- (id)initWithPath:(NSString*)path
+{
+	self = [super init];
+	if (self) {
+		GBSourceInfo *info = [GBSourceInfo infoWithFilename:[path lastPathComponent] lineNumber:1];
+		[self registerSourceInfo:info];
+		self.nameOfDocument = [path lastPathComponent];
+		self.pathOfDocument = path;
+		self.basePathOfDocument = @"";
+		self.comment = [[[GBComment alloc] init] autorelease];
+		self.comment.sourceInfo = info;
+		_adoptedProtocols = [[GBAdoptedProtocolsProvider alloc] initWithParentObject:self];
+		_methods = [[GBMethodsProvider alloc] initWithParentObject:self];
+		
+		self.sections = [NSMutableArray array];
 	}
 	return self;
 }
@@ -70,5 +95,17 @@
 @synthesize basePathOfDocument;
 @synthesize adoptedProtocols = _adoptedProtocols;
 @synthesize methods = _methods;
+@synthesize sections;
+@synthesize humanReadableNameOfDocument;
+
+- (void)logContents
+{
+	NSLog(@"Document contents: %@", self.comment.stringValue);
+	NSLog(@"%i sections", [self.sections count]);
+	for (GBDocumentSectionData *d in self.sections)
+	{
+		[d logContents];
+	}
+}
 
 @end

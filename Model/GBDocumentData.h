@@ -69,6 +69,10 @@
  */
 @property (copy) NSString *nameOfDocument;
 
+
+/// A human readable name. Displays as the title of the document, and any instances of the crossreference <name> get replaced with the human readable name.
+@property (copy) NSString *humanReadableNameOfDocument;
+
 /** Full path of the document source, including the file name and extension.
  
  @see nameOfDocument
@@ -103,5 +107,9 @@
  This is used when creating cross references; if the value is `YES`, `basePathOfDocument` is considered as the subpath from the root output path.
  */
 @property (assign) BOOL isCustomDocument;
+
+
+/// Contains all the sections of the document. Any content in the document's own comment is presented at the top above the sections. (Thus, any document with no sections behaves exactly as before.)
+@property (retain) NSMutableArray *sections;
 
 @end

@@ -16,8 +16,8 @@
 
 }
 
-@property(retain) NSString *sectionName;
-@property(retain) NSString *title;
+@property(retain) NSString *nameOfDocumentSection;
+@property(retain) NSString *humanReadableNameOfDocumentSection;
 
 @property(retain) NSMutableArray *subsections;
 

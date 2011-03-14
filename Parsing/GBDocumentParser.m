@@ -11,11 +11,24 @@
 #import "GBApplicationSettingsProvider.h"
 #import "GBStore.h"
 #import "GBDocumentData.h"
+#import "GBDocumentSectionData.h"
+#import "GBComment.h"
+
+
+@interface GBDocumentParser ()
+
+@property (retain) NSMutableArray *sectionStack;
+@property (retain) NSMutableString *contentBuffer;
+
+- (NSInteger)levelForSectionCommand:(NSString*)command;
+
+@end
 
 
 @implementation GBDocumentParser
 
 @synthesize settingsProvider;
+@synthesize sectionStack, contentBuffer;
 
 
 + (GBDocumentParser*)parserWithSettingsProvider:(GBApplicationSettingsProvider*)aSettingsProvider
@@ -37,9 +50,140 @@
 
 - (void)parseDocumentFromString:(NSString*)contents path:(NSString*)path basePath:(NSString*)basePath toStore:(GBStore*)store
 {
-	GBDocumentData *document = [GBDocumentData documentDataWithContents:contents path:path];
+	
+	// read line by line. If section command, manipulate stack, otherwise add to buffer. If end of file or section command, tack buffer onto last section on stack.
+	
+	//GBDocumentData *document = [GBDocumentData documentDataWithContents:contents path:path];
+	//document.basePathOfDocument = basePath;
+	//[store registerDocument:document];
+	
+	self.sectionStack = [NSMutableArray array];
+	self.contentBuffer = [NSMutableString string];
+	
+	GBDocumentData *document = [[GBDocumentData alloc] initWithPath:path];	
 	document.basePathOfDocument = basePath;
+	
+	NSArray *lines = [contents arrayOfLines];
+	
+	BOOL ignoreLine;
+	
+	for (NSString *line in lines)
+	{
+		NSString *trimmedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+		
+		ignoreLine = NO;
+		if ([trimmedLine length]>0 && [[trimmedLine substringToIndex:1] isEqualToString:@"@"])
+		{
+			NSScanner *scanner = [NSScanner scannerWithString:trimmedLine];
+			
+			NSString *command = nil;
+			NSString *shortName = nil;
+			NSString *longName = nil;
+			
+			[scanner scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&command];
+			command = [command stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"@"]];
+			
+			[scanner scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&shortName];
+			longName = [[trimmedLine substringFromIndex:[scanner scanLocation]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			
+			// Section commands
+			NSInteger level = [self levelForSectionCommand:command];
+			if (level != NSNotFound)
+			{
+				ignoreLine = YES;
+				
+				// if no sections, put it in the document
+				if ([self.sectionStack count] == 0)
+				{
+					NSLog(@"Setting doc cont to %@", self.contentBuffer);
+					document.comment.stringValue = self.contentBuffer;
+					[self.contentBuffer setString:@""];
+				}
+				else 
+				{
+					NSLog(@"Setting sec cont to %@", self.contentBuffer);
+					GBComment *comment = [GBComment commentWithStringValue:self.contentBuffer];
+					((GBDocumentSectionData*)[self.sectionStack lastObject]).comment = comment;
+					[self.contentBuffer setString:@""];
+				}
+				
+				// now to make new section
+				
+				if (level > [self.sectionStack count]+1)
+				{
+					NSLog(@"ERROR: malformed template file, tries to make subsection without section (or something)");
+				}
+				
+				NSInteger popDelta = ([self.sectionStack count] - level) + 1; // always need a pop unless increasing level
+				NSLog(@"Popping %i", popDelta);
+				
+				for (int i=0; i<popDelta; i++)
+				{
+					// pop section
+					[self.sectionStack removeLastObject];
+				}
+				
+				NSLog(@"New section %@", shortName);
+				GBDocumentSectionData *section = [[[GBDocumentSectionData alloc] init] autorelease];
+				section.nameOfDocumentSection = shortName;
+				section.humanReadableNameOfDocumentSection = longName;
+				if ([self.sectionStack count] == 0)
+				{
+					[document.sections addObject:section];
+				}
+				else 
+				{
+					[self.sectionStack.lastObject addObject:section];
+				}
+				[self.sectionStack addObject:section];
+			}
+			
+		}
+		
+		if (ignoreLine == NO)
+		{
+			// Not a command. Append to buffer.
+			[self.contentBuffer appendFormat:@"%@\n", line];
+		}
+		
+	}
+	
+	if ([self.sectionStack count] == 0)
+	{
+		document.comment.stringValue = self.contentBuffer;
+		[self.contentBuffer setString:@""];
+	}
+	else 
+	{
+		GBComment *comment = [GBComment commentWithStringValue:self.contentBuffer];
+		((GBDocumentSectionData*)[self.sectionStack lastObject]).comment = comment;
+		[self.contentBuffer setString:@""];
+	}
+	
+	[document logContents];
+	
 	[store registerDocument:document];
+	
+	[document release];
 }
+
+
+#pragma mark -
+#pragma mark Helper methods
+
+- (NSInteger)levelForSectionCommand:(NSString*)command
+{
+	// top level (0) is no section at all
+	if ([command isEqualToString:@"section"])
+	{
+		return 1;
+	}
+	if ([command isEqualToString:@"subsection"])
+	{
+		return 2;
+	}
+	return NSNotFound;
+}
+
 
 @end
