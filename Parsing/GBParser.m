@@ -12,6 +12,8 @@
 #import "GBObjectiveCParser.h"
 #import "GBParser.h"
 
+#import "GBDocumentParser.h"
+
 @interface GBParser ()
 
 - (void)parsePath:(NSString *)input usingBlock:(void (^)(NSString *path))block;
@@ -25,6 +27,7 @@
 @property (assign) NSUInteger numberOfParsedFiles;
 @property (assign) NSUInteger numberOfParsedDocuments;
 @property (retain) GBObjectiveCParser *objectiveCParser;
+@property (retain) GBDocumentParser *documentParser;
 @property (retain) GBStore *store;
 @property (retain) GBApplicationSettingsProvider *settings;
 
@@ -47,6 +50,7 @@
 	if (self) {
 		self.settings = settingsProvider;
 		self.objectiveCParser = [GBObjectiveCParser parserWithSettingsProvider:self.settings];
+		self.documentParser = [GBDocumentParser parserWithSettingsProvider:self.settings];
 	}
 	return self;
 }
@@ -97,10 +101,11 @@
 			}		
 			if ([contents length] == 0) GBLogWarn(@"Empty static document found at '%@'!", path);
 			
-			GBDocumentData *document = [GBDocumentData documentDataWithContents:contents path:path];
-			document.basePathOfDocument = [input stringByStandardizingPath];
-			[self.store registerDocument:document];
+			//GBDocumentData *document = [GBDocumentData documentDataWithContents:contents path:path];
+			//document.basePathOfDocument = [input stringByStandardizingPath];
+			//[self.store registerDocument:document];
 			
+			[self.documentParser parseDocumentFromString:contents path:path basePath:[input stringByStandardizingPath] toStore:self.store];
 			self.numberOfParsedDocuments++;
 		}];
 	}
@@ -227,6 +232,7 @@
 @synthesize numberOfParsedFiles;
 @synthesize numberOfParsedDocuments;
 @synthesize objectiveCParser;
+@synthesize documentParser;
 @synthesize settings;
 @synthesize store;
 
