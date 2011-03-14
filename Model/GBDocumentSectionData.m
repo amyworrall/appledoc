@@ -12,15 +12,12 @@
 @implementation GBDocumentSectionData
 
 @synthesize nameOfDocumentSection, humanReadableNameOfDocumentSection, subsections;
+@synthesize adoptedProtocols = _adoptedProtocols;
+@synthesize methods = _methods;
 
-- (void)logContents
+- (BOOL)isStaticDocument
 {
-	NSLog(@"Section %@ contents: %@", self.nameOfDocumentSection, self.comment.stringValue);
-	for (GBDocumentSectionData *d in self.subsections)
-	{
-		[d logContents];
-	}
+	return YES;
 }
-
 
 @end

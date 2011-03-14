@@ -11,8 +11,18 @@
 	<body>
 		<article>
 			<a title="{{page/title}}" name="top"></a>
+			
+			
+			
+			
+			
 			<div id="container">	
 				{{#object/comment}}{{#longDescription}}{{>GBCommentComponentsList}}{{/longDescription}}{{/object/comment}}
+				
+				{{#object/sections}}
+				{{>sections}}
+				{{/object/sections}}
+
 			</div>
 		</article>
 	</body>
@@ -25,4 +35,10 @@ EndSection
 
 Section GBCommentComponent
 {{&htmlValue}}
+EndSection
+
+Section sections
+<h1>{{nameOfDocumentSection}}</h1>
+{{#comment}}{{#longDescription}}{{#components}}{{&htmlValue}}{{/components}}{{/longDescription}}{{/comment}}
+{{#subsections}}{{>sections}}{{/subsections}}
 EndSection

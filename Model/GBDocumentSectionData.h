@@ -13,7 +13,9 @@
 
 
 @interface GBDocumentSectionData : GBModelBase <GBObjectDataProviding> {
-
+@private
+	GBAdoptedProtocolsProvider *_adoptedProtocols;
+	GBMethodsProvider *_methods;
 }
 
 @property(retain) NSString *nameOfDocumentSection;

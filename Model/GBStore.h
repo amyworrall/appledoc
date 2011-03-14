@@ -12,6 +12,7 @@
 @class GBCategoryData;
 @class GBProtocolData;
 @class GBDocumentData;
+@class GBDocumentSectionData;
 
 /** Implements the application's in-memory objects data store.
  
@@ -27,6 +28,8 @@
 	NSMutableDictionary *_protocolsByName;
 	NSMutableSet *_documents;
 	NSMutableDictionary *_documentsByName;
+	NSMutableSet *_documentSections;
+	NSMutableDictionary *_documentSectionsByName;
 	NSMutableSet *_customDocuments;
 	NSMutableDictionary *_customDocumentsByKey;
 }
@@ -95,6 +98,10 @@
  @see documents
  */
 - (void)registerDocument:(GBDocumentData *)document;
+
+
+- (void)registerDocumentSection:(GBDocumentSectionData *)document;
+
 
 /** Registers the given custom document to the store data.
  
@@ -205,6 +212,11 @@
  @see registerDocument:
  */
 @property (readonly) NSSet *documents;
+
+
+/// instances of GBDocumentSectionData
+@property (readonly) NSSet *documentSections;
+
 
 /** The list of all registered custom documents as instances of `GBDocumentData`.
  

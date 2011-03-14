@@ -98,14 +98,5 @@
 @synthesize sections;
 @synthesize humanReadableNameOfDocument;
 
-- (void)logContents
-{
-	NSLog(@"Document contents: %@", self.comment.stringValue);
-	NSLog(@"%i sections", [self.sections count]);
-	for (GBDocumentSectionData *d in self.sections)
-	{
-		[d logContents];
-	}
-}
 
 @end

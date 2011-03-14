@@ -19,6 +19,7 @@
 - (void)processCategories;
 - (void)processProtocols;
 - (void)processDocuments;
+- (void)processDocumentSections;
 
 - (void)processMethodsFromProvider:(GBMethodsProvider *)provider;
 - (void)processCommentForObject:(GBModelBase *)object;
@@ -78,6 +79,7 @@
 	[self processCategories];
 	[self processProtocols];
 	[self processDocuments];
+	[self processDocumentSections];
 }
 
 - (void)processClasses {
@@ -138,6 +140,15 @@
 		self.currentContext = document;
 		[self processCommentForObject:document];
 		GBLogDebug(@"Finished processing custom document %@.", document);
+	}
+}
+
+- (void)processDocumentSections
+{
+	for (GBDocumentSectionData *section in self.store.documentSections)
+	{
+		self.currentContext = section;
+		[self processCommentForObject:section];
 	}
 }
 

@@ -24,6 +24,8 @@
 		_protocolsByName = [[NSMutableDictionary alloc] init];
 		_documents = [[NSMutableSet alloc] init];
 		_documentsByName = [[NSMutableDictionary alloc] init];
+		_documentSections = [[NSMutableSet alloc] init];
+		_documentSectionsByName = [[NSMutableDictionary alloc] init];
 		_customDocuments = [[NSMutableSet alloc] init];
 		_customDocumentsByKey = [[NSMutableDictionary alloc] init];
 	}
@@ -112,6 +114,22 @@
 	[_documentsByName setObject:document forKey:[name stringByReplacingOccurrencesOfString:@"-template" withString:@""]];
 }
 
+
+- (void)registerDocumentSection:(GBDocumentSectionData *)section;
+{
+	if ([_documentSections containsObject:section]) return;
+	NSString *name = section.nameOfDocumentSection;
+	
+	GBDocumentSectionData *existingSection = [_documentSectionsByName objectForKey:name];
+	if (existingSection) {
+		[NSException raise:@"Section with name %@ is already registered!", name];
+		return;
+	}
+	[_documentSections addObject:section];
+	[_documentSectionsByName setObject:section forKey:name];
+	
+}
+
 - (void)registerCustomDocument:(GBDocumentData *)document withKey:(id)key {
 	NSParameterAssert(document != nil);
 	GBLogDebug(@"Registering custom document %@...", document);
@@ -163,6 +181,7 @@
 @synthesize categories = _categories;
 @synthesize protocols = _protocols;
 @synthesize documents = _documents;
+@synthesize documentSections = _documentSections;
 @synthesize customDocuments = _customDocuments;
 
 @end

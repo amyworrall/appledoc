@@ -95,13 +95,11 @@
 				// if no sections, put it in the document
 				if ([self.sectionStack count] == 0)
 				{
-					NSLog(@"Setting doc cont to %@", self.contentBuffer);
 					document.comment.stringValue = self.contentBuffer;
 					[self.contentBuffer setString:@""];
 				}
 				else 
 				{
-					NSLog(@"Setting sec cont to %@", self.contentBuffer);
 					GBComment *comment = [GBComment commentWithStringValue:self.contentBuffer];
 					((GBDocumentSectionData*)[self.sectionStack lastObject]).comment = comment;
 					[self.contentBuffer setString:@""];
@@ -115,15 +113,14 @@
 				}
 				
 				NSInteger popDelta = ([self.sectionStack count] - level) + 1; // always need a pop unless increasing level
-				NSLog(@"Popping %i", popDelta);
 				
 				for (int i=0; i<popDelta; i++)
 				{
 					// pop section
+					[store registerDocumentSection:[self.sectionStack lastObject]];
 					[self.sectionStack removeLastObject];
 				}
 				
-				NSLog(@"New section %@", shortName);
 				GBDocumentSectionData *section = [[[GBDocumentSectionData alloc] init] autorelease];
 				section.nameOfDocumentSection = shortName;
 				section.humanReadableNameOfDocumentSection = longName;
@@ -158,9 +155,13 @@
 		GBComment *comment = [GBComment commentWithStringValue:self.contentBuffer];
 		((GBDocumentSectionData*)[self.sectionStack lastObject]).comment = comment;
 		[self.contentBuffer setString:@""];
+
+		for (GBDocumentSectionData *section in self.sectionStack)
+		{
+			[store registerDocumentSection:[self.sectionStack lastObject]];
+			[self.sectionStack removeLastObject];
+		}
 	}
-	
-	[document logContents];
 	
 	[store registerDocument:document];
 	
