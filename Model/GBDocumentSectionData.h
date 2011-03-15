@@ -18,10 +18,16 @@
 	GBMethodsProvider *_methods;
 }
 
+/// The short name of the section. At the moment only used to generate anchor links, but in the future will hopefully be used for crossreferencing.
 @property(retain) NSString *nameOfDocumentSection;
+
+/// The long name of the section. This is what is displayed in the output.
 @property(retain) NSString *humanReadableNameOfDocumentSection;
 
+/// An array of GBDocumentSectionData objects.
 @property(retain) NSMutableArray *subsections;
+
+/// Returns `[NSNumber numberWithBool:YES]` if there is at least one subsection.
 - (NSNumber*)hasSubsections;
 
 @end

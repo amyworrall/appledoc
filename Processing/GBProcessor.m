@@ -147,8 +147,10 @@
 {
 	for (GBDocumentSectionData *section in self.store.documentSections)
 	{
+		GBLogInfo(@"Processing document section %@...", section);
 		self.currentContext = section;
 		[self processCommentForObject:section];
+		GBLogDebug(@"Finished processing document section %@.", section);
 	}
 }
 

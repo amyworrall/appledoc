@@ -117,6 +117,8 @@
 
 - (void)registerDocumentSection:(GBDocumentSectionData *)section;
 {
+	NSParameterAssert(section != nil);
+	GBLogDebug(@"Registering document section %@...", section);
 	if ([_documentSections containsObject:section]) return;
 	NSString *name = section.nameOfDocumentSection;
 	
