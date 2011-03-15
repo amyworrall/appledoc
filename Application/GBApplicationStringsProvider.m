@@ -89,6 +89,7 @@
 	if (!result) {
 		result = [[NSMutableDictionary alloc] init];
 		[result setObject:@"%@ Document" forKey:@"titleTemplate"];
+		[result setObject:@"%@" forKey:@"humanReadableTitleTemplate"];
 	}
 	return result;
 }

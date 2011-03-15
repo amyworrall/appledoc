@@ -9,14 +9,44 @@
 		{{#strings/appledocData}}<meta name="generator" content="{{tool}} {{version}} (build {{build}})" />{{/strings/appledocData}}
 	</head>
 	<body>
+		<header id="top_header">
+			<div id="title" role="banner">
+				<h1 class="hideInXcode">{{page/title}}</h1>
+			</div>
+			<ul id="headerButtons" role="toolbar">
+				<li id="toc_button">
+					<button aria-label="Show Table of Contents" role="checkbox" class="open" id="table_of_contents"><span class="disclosure"></span>Table of Contents</button>
+				</li>
+				<li id="jumpto_button" role="navigation">
+					{{>JumpTo}}
+				</li>
+			</ul>
+		</header>
+		<nav id="tocContainer" class="isShowingTOC">
+			<ul id="toc" role="tree">
+				{{>TableOfContents}}
+			</ul>
+		</nav>
 		<article>
-			<a title="{{page/title}}" name="top"></a>
-			
-			
-			
-			
-			
-			<div id="container">	
+			<div id="contents" class="isShowingTOC" role="main">
+				<a title="{{page/title}}" name="top"></a>
+				<div class="main-navigation navigation-top">
+					<ul>
+	<li><a href="{{page/indexPath}}">Index</a></li>
+</ul>
+
+				</div>
+				<div id="header">
+					<div class="section-header">
+						<h1 class="title title-header">{{page/title}}</h1>
+					</div>		
+				</div>
+				<div id="container">	
+				
+								
+												
+																
+				
 				{{#object/comment}}{{#longDescription}}{{>GBCommentComponentsList}}{{/longDescription}}{{/object/comment}}
 				
 				{{#object/sections}}
@@ -25,9 +55,123 @@
 
 			</div>
 		</article>
+		<script type="text/javascript">
+			function jumpToChange()
+			{
+				window.location.hash = this.options[this.selectedIndex].value;
+			}
+			
+			function toggleTOC()
+			{
+				var contents = document.getElementById('contents');
+				var tocContainer = document.getElementById('tocContainer');
+				
+				if (this.getAttribute('class') == 'open')
+				{
+					this.setAttribute('class', '');
+					contents.setAttribute('class', '');
+					tocContainer.setAttribute('class', '');
+					
+					window.name = "hideTOC";
+				}
+				else
+				{
+					this.setAttribute('class', 'open');
+					contents.setAttribute('class', 'isShowingTOC');
+					tocContainer.setAttribute('class', 'isShowingTOC');
+					
+					window.name = "";
+				}
+				return false;
+			}
+			
+			function toggleTOCEntryChildren(e)
+			{
+				e.stopPropagation();
+				var currentClass = this.getAttribute('class');
+				if (currentClass == 'children') {
+					this.setAttribute('class', 'children open');
+				}
+				else if (currentClass == 'children open') {
+					this.setAttribute('class', 'children');
+				}
+				return false;
+			}
+			
+			function tocEntryClick(e)
+			{
+				e.stopPropagation();
+				return true;
+			}
+			
+			function init()
+			{
+				var selectElement = document.getElementById('jumpTo');
+				selectElement.addEventListener('change', jumpToChange, false);
+				
+				var tocButton = document.getElementById('table_of_contents');
+				tocButton.addEventListener('click', toggleTOC, false);
+				
+				
+				var tocList = document.getElementById('toc');
+				
+				var tocEntries = tocList.getElementsByTagName('li');
+				for (var i = 0; i < tocEntries.length; i++) {
+					tocEntries[i].addEventListener('click', toggleTOCEntryChildren, false);
+				}
+				
+				var tocLinks = tocList.getElementsByTagName('a');
+				for (var i = 0; i < tocLinks.length; i++) {
+					tocLinks[i].addEventListener('click', tocEntryClick, false);
+				}
+				
+				if (window.name == "hideTOC") {
+					toggleTOC.call(tocButton);
+				}
+			}
+			
+			window.onload = init;
+		</script>
 	</body>
 </html>
 
+
+
+
+Section JumpTo
+<select id="jumpTo">
+	<option value="top">Jump To&#133;</option>
+	{{#object/sections}}
+	<option value="{{nameOfDocumentSection}}">{{humanReadableNameOfDocumentSection}}</option>
+	{{#subsections}}
+	<option value="{{nameOfDocumentSection}}">&nbsp;&nbsp;&nbsp;&nbsp;{{humanReadableNameOfDocumentSection}}</option>
+	{{/subsections}}
+	{{/object/sections}}
+
+</select>
+EndSection
+
+Section TableOfContents
+{{#object/sections}}
+<li role="treeitem"  class="children">
+{{#hasSubsections}}
+<span class="disclosure"></span>
+{{/hasSubsections}}
+{{^hasSubsections}}
+<span class="nodisclosure"></span>
+{{/hasSubsections}}
+<span class="sectionName"><a href="#{{nameOfDocumentSection}}">{{humanReadableNameOfDocumentSection}}</a></span>
+{{#hasSubsections}}
+<ul>
+{{#subsections}}
+<li><span class="nodisclosure"></span><span class="sectionName"><a href="#{{nameOfDocumentSection}}">{{humanReadableNameOfDocumentSection}}</a></span></li>
+{{/subsections}}
+</ul>
+{{/hasSubsections}}
+
+</li>
+{{/object/sections}}
+EndSection
 
 Section GBCommentComponentsList
 {{#components}}{{>GBCommentComponent}}{{/components}}
@@ -38,7 +182,14 @@ Section GBCommentComponent
 EndSection
 
 Section sections
-<h1>{{nameOfDocumentSection}}</h1>
+<a name="{{nameOfDocumentSection}}"></a>
+<h2 class="subtitle">{{humanReadableNameOfDocumentSection}}</h2>
 {{#comment}}{{#longDescription}}{{#components}}{{&htmlValue}}{{/components}}{{/longDescription}}{{/comment}}
-{{#subsections}}{{>sections}}{{/subsections}}
+{{#subsections}}{{>subsections}}{{/subsections}}
+EndSection
+
+Section subsections
+<a name="{{nameOfDocumentSection}}"></a>
+<h3 class="subsubtitle">{{humanReadableNameOfDocumentSection}}</h3>
+{{#comment}}{{#longDescription}}{{#components}}{{&htmlValue}}{{/components}}{{/longDescription}}{{/comment}}
 EndSection

@@ -79,9 +79,11 @@
 			NSString *command = nil;
 			NSString *shortName = nil;
 			NSString *longName = nil;
+			NSString *fullParameters = nil;
 			
 			[scanner scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&command];
 			command = [command stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"@"]];
+			fullParameters = [[trimmedLine substringFromIndex:[scanner scanLocation]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 			
 			[scanner scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&shortName];
 			longName = [[trimmedLine substringFromIndex:[scanner scanLocation]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -130,9 +132,14 @@
 				}
 				else 
 				{
-					[self.sectionStack.lastObject addObject:section];
+					[[[self.sectionStack lastObject] subsections] addObject:section];
 				}
 				[self.sectionStack addObject:section];
+			}
+			else if ([command isEqualToString:@"title"])
+			{
+				ignoreLine = YES;
+				document.humanReadableNameOfDocument = fullParameters;
 			}
 			
 		}
@@ -156,7 +163,7 @@
 		((GBDocumentSectionData*)[self.sectionStack lastObject]).comment = comment;
 		[self.contentBuffer setString:@""];
 
-		for (GBDocumentSectionData *section in self.sectionStack)
+		for (GBDocumentSectionData *section in [self.sectionStack copy])
 		{
 			[store registerDocumentSection:[self.sectionStack lastObject]];
 			[self.sectionStack removeLastObject];

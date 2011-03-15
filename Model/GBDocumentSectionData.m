@@ -20,4 +20,23 @@
 	return YES;
 }
 
+- (id)init
+{
+	self = [super init];
+	if (self)
+	{
+		self.subsections = [NSMutableArray array];
+	}
+	return self;
+}
+
+- (NSNumber*)hasSubsections
+{
+	if ([self.subsections count]>0)
+	{
+		return [NSNumber numberWithBool:YES];
+	}
+	return [NSNumber numberWithBool:NO];
+}
+
 @end

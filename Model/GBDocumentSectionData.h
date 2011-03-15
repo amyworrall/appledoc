@@ -22,5 +22,6 @@
 @property(retain) NSString *humanReadableNameOfDocumentSection;
 
 @property(retain) NSMutableArray *subsections;
+- (NSNumber*)hasSubsections;
 
 @end

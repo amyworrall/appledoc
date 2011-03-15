@@ -138,6 +138,7 @@
 	NSMutableDictionary *page = [NSMutableDictionary dictionary];
 	[page setObject:[self pageTitleForDocument:object] forKey:@"title"];
 	[page setObject:[path stringByAppendingPathComponent:@"css/styles.css"] forKey:@"cssPath"];
+	[page setObject:path forKey:@"indexPath"];
 	[self addFooterVarsToDictionary:page];
 	NSMutableDictionary *result = [NSMutableDictionary dictionary];
 	[result setObject:page forKey:@"page"];
@@ -244,6 +245,11 @@
 }
 
 - (NSString *)pageTitleForDocument:(GBDocumentData *)object {
+	if (object.humanReadableNameOfDocument != nil)
+	{
+		NSString *template = [self.settings.stringTemplates valueForKeyPath:@"documentPage.humanReadableTitleTemplate"];
+		return [NSString stringWithFormat:template, object.humanReadableNameOfDocument];
+	}
 	NSString *template = [self.settings.stringTemplates valueForKeyPath:@"documentPage.titleTemplate"];
 	return [NSString stringWithFormat:template, [[object.nameOfDocument lastPathComponent] stringByDeletingPathExtension]];
 }
