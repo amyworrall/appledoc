@@ -281,7 +281,7 @@ li#jumpto_button select {
 
 #tocContainer > ul#toc > li > ul, ul#toc > li > ul > li {
     margin-left: 0;
-    padding-left: 15px;
+    padding-left: 35px;
 }
 
 #tocContainer li ul li {
