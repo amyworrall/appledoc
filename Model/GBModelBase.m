@@ -92,6 +92,11 @@
 	return NO;
 }
 
+- (BOOL)isDocumentSection
+{
+	return NO;
+}
+
 - (BOOL)isTopLevelObject {
 	return NO;
 }

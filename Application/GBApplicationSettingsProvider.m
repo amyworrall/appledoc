@@ -322,8 +322,18 @@ NSString *kGBCustomDocumentIndexDescKey = @"index-description";
 	}
 	
 	// From now on we're generating hrefs from top-level object or documents to other documents, top-level objects or their members. First handle links from any kind of object to itself and top-level object or document to top-level object. Handle links from document to document slighlty differently, they are more complicated due to arbitrary directory structure.
-	if (object == source || object.isTopLevelObject || object.isStaticDocument) return [self htmlReferenceForTopLevelObject:object fromTopLevelObject:source];
+	if (source.isDocumentSection)
+	{
+		return [self htmlReferenceForTopLevelObject:object fromTopLevelObject:[(GBDocumentSectionData*)source document]];
+	}
 	
+	if (object == source || object.isTopLevelObject || object.isStaticDocument) 
+	{
+		return [self htmlReferenceForTopLevelObject:object fromTopLevelObject:source];
+	}
+		
+	
+
 	// From top-level object or document to top-level object member.
 	NSString *memberPath = [self htmlReferenceForMember:object prefixedWith:@"#"];
 	if (object.parentObject != source) {

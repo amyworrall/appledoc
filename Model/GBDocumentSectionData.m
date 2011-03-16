@@ -11,11 +11,16 @@
 
 @implementation GBDocumentSectionData
 
-@synthesize nameOfDocumentSection, humanReadableNameOfDocumentSection, subsections;
+@synthesize nameOfDocumentSection, humanReadableNameOfDocumentSection, subsections, document;
 @synthesize adoptedProtocols = _adoptedProtocols;
 @synthesize methods = _methods;
 
 - (BOOL)isStaticDocument
+{
+	return YES;
+}
+
+- (BOOL)isDocumentSection
 {
 	return YES;
 }

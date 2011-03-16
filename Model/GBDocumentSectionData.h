@@ -11,6 +11,7 @@
 #import "GBModelBase.h"
 #import "GBObjectDataProviding.h"
 
+@class GBDocumentData;
 
 @interface GBDocumentSectionData : GBModelBase <GBObjectDataProviding> {
 @private
@@ -29,5 +30,11 @@
 
 /// Returns `[NSNumber numberWithBool:YES]` if there is at least one subsection.
 - (NSNumber*)hasSubsections;
+
+/// The document the section is linked to
+@property(retain) GBDocumentData *document;
+
+/// So that the cross ref thing knows it's a section
+- (BOOL)isDocumentSection;
 
 @end

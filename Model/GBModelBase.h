@@ -100,6 +100,8 @@
  */
 @property (readonly) BOOL isStaticDocument;
 
+@property (readonly) BOOL isDocumentSection;
+
 /** Specifies whether this is a top level object or not.
  
  Top level objects are classes, categories and protocols.

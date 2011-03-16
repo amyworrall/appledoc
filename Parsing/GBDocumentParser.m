@@ -126,6 +126,7 @@
 				GBDocumentSectionData *section = [[[GBDocumentSectionData alloc] init] autorelease];
 				section.nameOfDocumentSection = shortName;
 				section.humanReadableNameOfDocumentSection = longName;
+				section.document = document;
 				if ([self.sectionStack count] == 0)
 				{
 					[document.sections addObject:section];
